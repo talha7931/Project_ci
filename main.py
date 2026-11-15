@@ -16,3 +16,4 @@ if str(PROJECT_ROOT) not in sys.path:
 from backend.main import app  # noqa: F401  – re-export for Uvicorn
 
 __all__ = ["app"]
+

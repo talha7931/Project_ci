@@ -1,9 +1,16 @@
+# ── Core API ─────────────────────────────────────────────────────────────────
 fastapi==0.163.1
 uvicorn[standard]==0.54.0
 pydantic==2.14.3
-scikit-learn==1.6.1
-joblib==1.6.0
-pandas==3.1.1
-numpy==2.5.4
 python-dotenv==1.2.4
 
+# ── Machine Learning ──────────────────────────────────────────────────────────
+# numpy MUST be < 2.5 on Python 3.11 (NumPy dropped py3.11 in v2.5.0).
+# 2.4.3 is the latest release that ships a prebuilt cp311 manylinux wheel on PyPI.
+numpy==2.4.3
+# scikit-learn 1.6.1 — exact version the model was trained with; cp311 wheel available.
+scikit-learn==1.6.1
+# joblib 1.4.x — compatible with scikit-learn 1.6.x; ships cp3-none-any wheel (pure Python).
+joblib==1.4.2
+# pandas — cp311 wheels available; required for DataFrame feature vector construction.
+pandas==3.1.1
