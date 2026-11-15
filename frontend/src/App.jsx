@@ -24,21 +24,10 @@ import {
   Check
 } from 'lucide-react';
 
-function resolveApiBaseUrl() {
-  const raw = String(import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '');
-  if (!raw) return '';
-  if (typeof window === 'undefined') return raw;
-  try {
-    const configured = new URL(raw, window.location.origin);
-    // Same Render Web Service: always use relative /health and /predict paths.
-    if (configured.origin === window.location.origin) return '';
-    return raw;
-  } catch {
-    return '';
-  }
-}
-
-const API_BASE_URL = resolveApiBaseUrl();
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL ||
+  "https://project-ci-1.onrender.com"
+).trim().replace(/\/$/, "");
 
 function formatApiDetail(detail) {
   if (!detail) return null;
@@ -209,20 +198,19 @@ export default function App() {
             {/* Status indicator */}
             <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-cyber-900 border border-cyber-700/80 text-xs">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  systemHealth.status === 'healthy'
+                className={`w-2 h-2 rounded-full ${systemHealth.status === 'healthy'
                     ? 'bg-emerald-400 shadow-sm shadow-emerald-400/80 animate-ping'
                     : systemHealth.status === 'connecting'
-                    ? 'bg-amber-400 animate-pulse'
-                    : 'bg-rose-500'
-                }`}
+                      ? 'bg-amber-400 animate-pulse'
+                      : 'bg-rose-500'
+                  }`}
               />
               <span className="text-slate-300 font-mono">
                 {systemHealth.status === 'healthy'
                   ? 'Core Ready (RF-100)'
                   : systemHealth.status === 'connecting'
-                  ? 'Connecting...'
-                  : 'Backend Standby'}
+                    ? 'Connecting...'
+                    : 'Backend Standby'}
               </span>
             </div>
 
@@ -315,11 +303,10 @@ export default function App() {
                   key={idx}
                   type="button"
                   onClick={() => setPreset(item.url)}
-                  className={`px-2.5 py-1 rounded-md border font-mono transition-all ${
-                    item.type === 'legit'
+                  className={`px-2.5 py-1 rounded-md border font-mono transition-all ${item.type === 'legit'
                       ? 'border-emerald-800/60 bg-emerald-950/30 text-emerald-300 hover:bg-emerald-900/50'
                       : 'border-rose-800/60 bg-rose-950/30 text-rose-300 hover:bg-rose-900/50'
-                  }`}
+                    }`}
                 >
                   {item.label}
                 </button>
@@ -341,20 +328,18 @@ export default function App() {
 
             {/* Verdict Card */}
             <div
-              className={`rounded-2xl p-6 sm:p-8 border shadow-2xl transition-all ${
-                result.predicted_class === 1
+              className={`rounded-2xl p-6 sm:p-8 border shadow-2xl transition-all ${result.predicted_class === 1
                   ? 'bg-gradient-to-b from-rose-950/40 via-cyber-900/90 to-cyber-950 border-rose-500/40 shadow-rose-950/40'
                   : 'bg-gradient-to-b from-emerald-950/40 via-cyber-900/90 to-cyber-950 border-emerald-500/40 shadow-emerald-950/40'
-              }`}
+                }`}
             >
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                 <div className="flex items-center space-x-4">
                   <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-xl ${
-                      result.predicted_class === 1
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-xl ${result.predicted_class === 1
                         ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
                         : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                    }`}
+                      }`}
                   >
                     {result.predicted_class === 1 ? (
                       <ShieldAlert className="w-9 h-9" />
@@ -365,18 +350,16 @@ export default function App() {
                   <div>
                     <div className="flex items-center space-x-3">
                       <h3
-                        className={`text-2xl sm:text-3xl font-black tracking-tight ${
-                          result.predicted_class === 1 ? 'text-rose-400' : 'text-emerald-400'
-                        }`}
+                        className={`text-2xl sm:text-3xl font-black tracking-tight ${result.predicted_class === 1 ? 'text-rose-400' : 'text-emerald-400'
+                          }`}
                       >
                         {result.label.toUpperCase()}
                       </h3>
                       <span
-                        className={`text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold uppercase ${
-                          result.predicted_class === 1
+                        className={`text-xs px-2.5 py-0.5 rounded-full font-mono font-semibold uppercase ${result.predicted_class === 1
                             ? 'bg-rose-950 text-rose-300 border border-rose-700'
                             : 'bg-emerald-950 text-emerald-300 border border-emerald-700'
-                        }`}
+                          }`}
                       >
                         Class {result.predicted_class}
                       </span>
@@ -397,9 +380,8 @@ export default function App() {
                   </div>
                   <div className="w-full h-2.5 bg-cyber-800 rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-1000 ${
-                        result.predicted_class === 1 ? 'bg-rose-500' : 'bg-emerald-500'
-                      }`}
+                      className={`h-full rounded-full transition-all duration-1000 ${result.predicted_class === 1 ? 'bg-rose-500' : 'bg-emerald-500'
+                        }`}
                       style={{ width: `${Math.max(result.confidence * 100, 5)}%` }}
                     />
                   </div>
@@ -452,11 +434,10 @@ export default function App() {
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-medium text-slate-400">2. has_https</span>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded font-mono font-semibold ${
-                        result.features.has_https === 1
+                      className={`text-xs px-2 py-0.5 rounded font-mono font-semibold ${result.features.has_https === 1
                           ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
                           : 'bg-amber-950 text-amber-300 border border-amber-800'
-                      }`}
+                        }`}
                     >
                       {result.features.has_https === 1 ? 'YES (1)' : 'NO (0)'}
                     </span>
@@ -471,11 +452,10 @@ export default function App() {
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-medium text-slate-400">3. has_ip</span>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded font-mono font-semibold ${
-                        result.features.has_ip === 1
+                      className={`text-xs px-2 py-0.5 rounded font-mono font-semibold ${result.features.has_ip === 1
                           ? 'bg-rose-950 text-rose-300 border border-rose-800'
                           : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                      }`}
+                        }`}
                     >
                       {result.features.has_ip === 1 ? 'DETECTED (1)' : 'CLEAN (0)'}
                     </span>
@@ -512,9 +492,8 @@ export default function App() {
                   <div className="flex justify-between items-center">
                     <span className="text-xs font-medium text-slate-400">6. keyword_count</span>
                     <span
-                      className={`text-base font-bold font-mono ${
-                        result.features.keyword_count > 0 ? 'text-amber-400' : 'text-emerald-400'
-                      }`}
+                      className={`text-base font-bold font-mono ${result.features.keyword_count > 0 ? 'text-amber-400' : 'text-emerald-400'
+                        }`}
                     >
                       {result.features.keyword_count}
                     </span>
