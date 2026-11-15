@@ -1,0 +1,42 @@
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# Node & Frontend dependencies
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.npm/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Kombai directory
+.kombai/
+
+# Large original uncompressed model (>100MB exceeds GitHub push limit)
+# The identical, bit-for-bit lossless compressed best_url_model.pkl.gz (21.9 MB) is committed
+best_url_model.pkl
+
