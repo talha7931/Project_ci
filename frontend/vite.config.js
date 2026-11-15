@@ -11,6 +11,14 @@ export default defineConfig({
       '/model-info': 'http://localhost:8000',
     }
   },
+  preview: {
+    port: 3000,
+    proxy: {
+      '/predict': 'http://localhost:8000',
+      '/health': 'http://localhost:8000',
+      '/model-info': 'http://localhost:8000',
+    }
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

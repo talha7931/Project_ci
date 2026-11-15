@@ -24,7 +24,56 @@ import {
   Check
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+function resolveApiBaseUrl() {
+  const raw = String(import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '');
+  if (!raw) return '';
+  if (typeof window === 'undefined') return raw;
+  try {
+    const configured = new URL(raw, window.location.origin);
+    // Same Render Web Service: always use relative /health and /predict paths.
+    if (configured.origin === window.location.origin) return '';
+    return raw;
+  } catch {
+    return '';
+  }
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
+
+function formatApiDetail(detail) {
+  if (!detail) return null;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((item) => (typeof item === 'string' ? item : item?.msg || JSON.stringify(item)))
+      .join('; ');
+  }
+  return JSON.stringify(detail);
+}
+
+async function readApiJson(response) {
+  const contentType = response.headers.get('content-type') || '';
+  const text = await response.text();
+
+  if (!text || !text.trim()) {
+    throw new Error(
+      `Empty response from ${response.url || 'the API'} (HTTP ${response.status}). The server did not return JSON.`
+    );
+  }
+
+  const looksLikeJson = contentType.includes('application/json') || /^[[{]/.test(text.trim());
+  if (!looksLikeJson) {
+    throw new Error(
+      `Expected JSON from the API but received ${contentType || 'a non-JSON response'} (HTTP ${response.status}).`
+    );
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('The server returned invalid JSON.');
+  }
+}
 
 const PRESET_URLS = [
   {
@@ -69,10 +118,14 @@ export default function App() {
 
   // Check backend health on mount
   useEffect(() => {
-    fetch(`${API_BASE_URL}/health`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Backend responded with error');
-        return res.json();
+    fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    })
+      .then(async (res) => {
+        const data = await readApiJson(res);
+        if (!res.ok) throw new Error(formatApiDetail(data.detail) || 'Backend responded with error');
+        return data;
       })
       .then((data) => setSystemHealth(data))
       .catch((err) => {
@@ -101,16 +154,18 @@ export default function App() {
     try {
       const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({ url: cleanUrl }),
       });
 
+      const data = await readApiJson(response);
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || `Server returned status ${response.status}`);
+        throw new Error(formatApiDetail(data.detail) || `Server returned status ${response.status}`);
       }
 
-      const data = await response.json();
       setResult(data);
     } catch (err) {
       setError(err.message || 'An error occurred during prediction analysis.');
